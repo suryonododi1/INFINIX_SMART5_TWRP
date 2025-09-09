@@ -36,7 +36,7 @@ jobs:
           mka recoveryimage
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: twrp-recovery-x657b
           path: twrp/out/target/product/x657b/recovery.img
