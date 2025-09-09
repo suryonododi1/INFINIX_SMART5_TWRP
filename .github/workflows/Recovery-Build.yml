@@ -1,0 +1,38 @@
+name: Recovery Build with Prebuilt
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt update && sudo apt install -y python3-pip
+        pip install gdown
+
+    - name: Download boot.img, recovery.img, vbmeta.img
+      run: |
+        mkdir prebuilt
+        gdown https://drive.google.com/uc?id=1-GRgmTPO_E7_8ERg0WGBcsJKjC3Ct-r1 -O prebuilt/boot.img
+        gdown https://drive.google.com/uc?id=1-KKxl-4gzTrbhk__k8fKJw3k18KqvyLL -O prebuilt/recovery.img
+        gdown https://drive.google.com/uc?id=1-PanbevDTcOwPIHYCOom-SsntZbHyxqj -O prebuilt/vbmeta.img
+        ls -lh prebuilt/
+
+    - name: Build TWRP
+      run: |
+        echo "Pretend building TWRP here..."
+        # contoh: source build/envsetup.sh && lunch twrp_x657b-eng && mka recoveryimage
+        # disini kamu bisa pakai prebuilt/boot.img dll sesuai kebutuhan
+
+    - name: Upload results
+      uses: actions/upload-artifact@v4
+      with:
+        name: twrp-build-output
+        path: |
+          prebuilt/*
+          out/target/product/*/recovery.img
