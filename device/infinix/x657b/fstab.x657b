@@ -1,0 +1,13 @@
+# fstab for Infinix Smart 5 (X657B)
+# <src>     <mnt_point>  <type>  <mnt_flags>   <fs_mgr_flags>
+
+# Boot & recovery
+/dev/block/bootdevice/by-name/boot      /boot       emmc    defaults    defaults
+/dev/block/bootdevice/by-name/recovery  /recovery   emmc    defaults    defaults
+
+# System & userdata
+/dev/block/bootdevice/by-name/system    /system     ext4    ro,barrier=1    wait,slotselect,avb
+/dev/block/bootdevice/by-name/userdata  /data       ext4    noatime,nosuid,nodev,barrier=1    wait,check,quota,resize,formattable,forceencrypt=footer
+
+# Cache
+/dev/block/bootdevice/by-name/cache     /cache      ext4    noatime,nosuid,nodev,barrier=1    wait,check,formattable
