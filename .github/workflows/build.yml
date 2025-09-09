@@ -1,4 +1,4 @@
-name: Build TWRP X657B
+name: Build TWRP for Infinix Smart 5 (X657B)
 
 on:
   workflow_dispatch:
@@ -10,23 +10,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install deps
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git-core gnupg flex bison build-essential \
-            zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 \
-            lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev \
-            libgl1-mesa-dev libxml2-utils xsltproc unzip python-is-python3
+          sudo apt-get install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev \
+            gcc-multilib g++-multilib libc6-dev-i386 libncurses5-dev x11proto-core-dev \
+            libx11-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig
 
-      - name: Sync TWRP source
+      - name: Init repo
         run: |
-          mkdir workspace && cd workspace
-          repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni -b twrp-12.1
-          repo sync -c -j$(nproc) --force-sync
+          mkdir twrp && cd twrp
+          repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_omni.git -b twrp-12.1
+          repo sync -j$(nproc) --force-sync
 
-      - name: Build TWRP
+      - name: Copy device tree
         run: |
-          cd workspace
-          . build/envsetup.sh
+          mkdir -p twrp/device/infinix
+          cp -r device/infinix/x657b twrp/device/infinix/x657b
+
+      - name: Lunch & Build
+        run: |
+          cd twrp
+          source build/envsetup.sh
           lunch omni_x657b-eng
           mka recoveryimage
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: twrp-recovery-x657b
+          path: twrp/out/target/product/x657b/recovery.img
